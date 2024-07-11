@@ -3,6 +3,7 @@ import loadModel from './model';
 export const maxDuration = 60;
 
 const modelPromise = loadModel();
+// This variable stores the menu description embeddings so that it will load only once and reused on each search call
 let descriptionsEmbeddings: any
 
 type Item = {
@@ -70,9 +71,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         results = items
       } else {
         const keywordEmbedding = await model.embed([keyword])
-        // const descriptionsEmbeddings = await model.embed(
-        //   items.map((item) => item.description)
-        // )
 
         // Calculate cosine similarity
         const similarities = descriptionsEmbeddings
@@ -89,8 +87,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           similarity: rankedItem.similarity,
         })
         )
-
-        // results = [items[0]]
       }
 
       return res.json({
